@@ -101,3 +101,9 @@ sys_date(void)
   
   return 0; 
 } 
+
+int
+sys_time(void)
+{
+  return 1;
+}
