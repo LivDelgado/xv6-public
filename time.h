@@ -1,3 +1,6 @@
-#include "types.h"
-#include "user.h"
-#include "date.h"
+
+struct systemtime {
+    int start;
+    int end;
+    int counter;
+};

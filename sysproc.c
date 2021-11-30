@@ -6,6 +6,7 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "proc.h"
+#include "time.h"
 
 int
 sys_fork(void)
@@ -105,5 +106,5 @@ sys_date(void)
 int
 sys_time(void)
 {
-  return 1;
+  return system_time.counter;
 }

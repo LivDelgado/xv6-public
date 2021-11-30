@@ -6,6 +6,7 @@
 #include "proc.h"
 #include "x86.h"
 #include "syscall.h"
+#include "time.h"
 
 // User code makes a system call with INT T_SYSCALL.
 // System call number in %eax.
@@ -106,6 +107,8 @@ extern int sys_uptime(void);
 extern int sys_date(void);
 extern int sys_time(void);
 
+struct systemtime system_time;
+
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
 [SYS_exit]    sys_exit,
@@ -139,8 +142,16 @@ syscall(void)
   struct proc *curproc = myproc();
 
   num = curproc->tf->eax;
+
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
+    system_time.start = sys_uptime(); // start system time counter
+  
     curproc->tf->eax = syscalls[num]();
+
+    system_time.end = sys_uptime(); // finish system time counter
+
+    system_time.counter += system_time.end - system_time.start;
+
   } else {
     cprintf("%d %s: unknown sys call %d\n",
             curproc->pid, curproc->name, num);

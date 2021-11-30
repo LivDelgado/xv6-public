@@ -1,10 +1,16 @@
+#include "types.h"
+#include "user.h"
+#include "date.h"
 #include "time.h"
 
 int stdout = 1;
 int stderror = 2;
 
-void calculateTimeAndPrint(int start, int end, char *type) {
-  int difference = end - start;
+int calculateTimeDifference(int start, int end) {
+  return end - start;
+}
+
+void printTimeDifference(int difference, char *type) {
   int seconds = difference / 100;
   int seconds_rest = difference % 100;
 
@@ -16,9 +22,19 @@ void calculateTimeAndPrint(int start, int end, char *type) {
   printf(stdout, "%d\n", seconds_rest);
 }
 
+void calculateTimeAndPrint(int start, int end, char *type) {
+  int difference = calculateTimeDifference(start, end);
+  printTimeDifference(difference, type);
+}
+
 int main(int argc, char *argv[])
 {
+  struct rtcdate rt_date_start;
+  struct rtcdate rt_date_end;
+
   int rt_start = uptime();
+
+  date(&rt_date_start);
 
   int pid = fork();
 
@@ -40,10 +56,22 @@ int main(int argc, char *argv[])
     exit();
   }
 
+  int st_difference = time();
   int rt_end = uptime();
+
+  date(&rt_date_end);
+
+  printf(1, "minute: %d -- %d", rt_date_start.minute, rt_date_end.minute);
+  printf(1, "second: %d -- %d", rt_date_start.second, rt_date_end.second);
 
   printf(stdout, "time spent in %s command\n", argv[1]);
   calculateTimeAndPrint(rt_start, rt_end, "real");
+
+  int rt_difference = calculateTimeDifference(rt_start, rt_end);
+  printTimeDifference(st_difference, "system");
+
+  int ut_total = rt_difference - st_difference;
+  printTimeDifference(ut_total, "user");
 
   exit();
 }
