@@ -11,15 +11,22 @@ int calculateTimeDifference(int start, int end) {
 }
 
 void printTimeDifference(int difference, char *type) {
+  char signal = ' ';
+  if (difference < 0) {
+    signal = '-';
+    difference *= -1;
+  }
+
   int seconds = difference / 100;
   int seconds_rest = difference % 100;
 
   // print time result
   printf(stdout, "%s: \t", type);
-  printf(stdout, "%d.", seconds);
-  if (seconds_rest < 10)
-    printf(stdout, "0");
-  printf(stdout, "%d\n", seconds_rest);
+  printf(stdout, "%c%d.", signal, seconds);
+  if (seconds_rest < 100 && seconds_rest > 10)
+    printf(stdout, "0%d\n", seconds_rest);
+  else if (seconds_rest < 10)
+    printf (stdout, "00%d\n", seconds_rest);
 }
 
 void calculateTimeAndPrint(int start, int end, char *type) {
@@ -29,14 +36,10 @@ void calculateTimeAndPrint(int start, int end, char *type) {
 
 int main(int argc, char *argv[])
 {
-  struct rtcdate rt_date_start;
-  struct rtcdate rt_date_end;
+  int pid = fork();
 
   int rt_start = uptime();
-
-  date(&rt_date_start);
-
-  int pid = fork();
+  time();
 
   if (pid == 0) // child process
   {
@@ -58,11 +61,6 @@ int main(int argc, char *argv[])
 
   int st_difference = time();
   int rt_end = uptime();
-
-  date(&rt_date_end);
-
-  printf(1, "minute: %d -- %d", rt_date_start.minute, rt_date_end.minute);
-  printf(1, "second: %d -- %d", rt_date_start.second, rt_date_end.second);
 
   printf(stdout, "time spent in %s command\n", argv[1]);
   calculateTimeAndPrint(rt_start, rt_end, "real");

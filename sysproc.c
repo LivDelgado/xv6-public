@@ -106,5 +106,7 @@ sys_date(void)
 int
 sys_time(void)
 {
-  return system_time.counter;
+  int current = system_time.counter;
+  system_time.counter = 0;
+  return current;
 }
