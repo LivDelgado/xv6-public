@@ -144,13 +144,16 @@ syscall(void)
   num = curproc->tf->eax;
 
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
+    // since every system call happens through this function
+    // in the simplified time command we can use this function
+    // as the system time calculator too
     system_time.start = sys_uptime(); // start system time counter
-  
-    curproc->tf->eax = syscalls[num]();
+
+    curproc->tf->eax = syscalls[num](); // actually executes the system call
 
     system_time.end = sys_uptime(); // finish system time counter
 
-    system_time.counter += system_time.end - system_time.start;
+    system_time.counter += system_time.end - system_time.start; // calculate and store the system time
 
   } else {
     cprintf("%d %s: unknown sys call %d\n",

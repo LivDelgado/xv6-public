@@ -36,6 +36,8 @@ void calculateTimeAndPrint(int start, int end, char *type) {
 
 int main(int argc, char *argv[])
 {
+  // check if the number of arguments for time is less than needed
+  // if so, prints only zeros
   if (argc < 2) {
     printTimeDifference(0, "real");
     printTimeDifference(0, "user");
@@ -44,14 +46,22 @@ int main(int argc, char *argv[])
     exit();
   }
 
+  // create a new process to execute the command
   int pid = fork();
 
+  // get current number of ticks as a real time start
   int rt_start = uptime();
+
+  // calls time function to reset configurations
   time();
 
   if (pid == 0) // child process
   {
-    if (exec(argv[1], argv + 1) < 0)
+    char *command = argv[1];
+    char **arguments = argv + 1;
+
+    // execute the command
+    if (exec(command, arguments) < 0)
     {
       printf(stderror, "time: Failed to execute command\n");
       exit();
@@ -67,16 +77,26 @@ int main(int argc, char *argv[])
     exit();
   }
 
+  // gets the system time calculation from time function
   int st_difference = time();
+
+  // get current ticks number as real time end
   int rt_end = uptime();
 
+  // start printing the output
   printf(stdout, "time spent in %s command\n", argv[1]);
+
+  // print real time
   calculateTimeAndPrint(rt_start, rt_end, "real");
 
-  int rt_difference = calculateTimeDifference(rt_start, rt_end);
+  // print system time
   printTimeDifference(st_difference, "system");
 
+  // calculates user time (real - system)
+  int rt_difference = calculateTimeDifference(rt_start, rt_end);
   int ut_total = rt_difference - st_difference;
+
+  // print user time
   printTimeDifference(ut_total, "user");
 
   exit();
