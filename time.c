@@ -21,12 +21,12 @@ void printTimeDifference(int difference, char *type) {
   int seconds_rest = difference % 100;
 
   // print time result
-  printf(stdout, "%s: \t", type);
+  printf(stdout, "%s:\t", type);
   printf(stdout, "%c%d.", signal, seconds);
   if (seconds_rest < 100 && seconds_rest > 10)
-    printf(stdout, "0%d\n", seconds_rest);
+    printf(stdout, "0%ds\n", seconds_rest);
   else if (seconds_rest < 10)
-    printf (stdout, "00%d\n", seconds_rest);
+    printf (stdout, "00%ds\n", seconds_rest);
 }
 
 void calculateTimeAndPrint(int start, int end, char *type) {
