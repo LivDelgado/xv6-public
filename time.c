@@ -36,6 +36,14 @@ void calculateTimeAndPrint(int start, int end, char *type) {
 
 int main(int argc, char *argv[])
 {
+  if (argc < 2) {
+    printTimeDifference(0, "real");
+    printTimeDifference(0, "user");
+    printTimeDifference(0, "sys");
+
+    exit();
+  }
+
   int pid = fork();
 
   int rt_start = uptime();
