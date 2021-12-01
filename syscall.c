@@ -147,6 +147,8 @@ syscall(void)
     // since every system call happens through this function
     // in the simplified time command we can use this function
     // as the system time calculator too
+    // cprintf("%s\n", curproc->name);
+
     system_time.start = sys_uptime(); // start system time counter
 
     curproc->tf->eax = syscalls[num](); // actually executes the system call
