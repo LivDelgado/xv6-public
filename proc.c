@@ -112,6 +112,8 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 
+  p->alarmticks = 10; // DEFINING CONSTANT TICKS TO RUN PERIODIC FUNCTION
+
   return p;
 }
 

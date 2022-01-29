@@ -106,7 +106,6 @@ extern int sys_write(void);
 extern int sys_uptime(void);
 extern int sys_date(void);
 extern int sys_time(void);
-extern int sys_alarm(void);
 
 struct systemtime system_time;
 
@@ -134,7 +133,6 @@ static int (*syscalls[])(void) = {
 [SYS_close]   sys_close,
 [SYS_date]    sys_date,
 [SYS_time]    sys_time,
-[SYS_alarm]   sys_alarm,
 };
 
 void

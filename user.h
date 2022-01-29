@@ -25,7 +25,6 @@ int sleep(int);
 int uptime(void);
 int date(void*);
 int time(void);
-int alarm(int ticks, void(*hander)());
 
 // ulib.c
 int stat(const char*, struct stat*);

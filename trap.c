@@ -54,9 +54,7 @@ trap(struct trapframe *tf)
       // when a process's alarm interval expires execute the method
       if(myproc()->alarmticks == myproc()->curalarmticks){ 
         myproc()->curalarmticks = 0;
-        tf->esp -= 4;    
-        *((uint *)(tf->esp)) = tf->eip;
-        tf->eip =(uint) myproc()->alarmhandler;
+        yield();
       }
     }
     if(cpuid() == 0){
