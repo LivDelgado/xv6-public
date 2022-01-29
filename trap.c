@@ -48,8 +48,10 @@ trap(struct trapframe *tf)
 
   switch(tf->trapno){
   case T_IRQ0 + IRQ_TIMER:
+    // there's a process running and timer interrupt came from user space
     if(myproc() && (tf->cs&3)==DPL_USER){
       myproc()->curalarmticks++;
+      // when a process's alarm interval expires execute the method
       if(myproc()->alarmticks == myproc()->curalarmticks){ 
         myproc()->curalarmticks = 0;
         tf->esp -= 4;    
