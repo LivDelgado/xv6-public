@@ -557,16 +557,23 @@ cps()
 
 //Loop over process table looking for process with pid.
   acquire(&ptable.lock);
-  cprintf("name \t pid \t state \t priority \n");
+  cprintf("name \t pid \t state \t priority \t Exec esperada\n");
+  int somaPrioridade = 0;
+  
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    somaPrioridade += p->priority;  
+  }
+   
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){   
+    p->execTime = (p->priority * 10) / somaPrioridade;
     if(p->state == SLEEPING){
-      cprintf("%s \t %d \t SLEEPING \t %d \n ", p->name,p->pid,p->priority);
+      cprintf("%s \t %d \t SLEEPING \t %d \t %d \n ", p->name,p->pid,p->priority, p->execTime);
     }	 
     else if(p->state == RUNNING){
-      cprintf("%s \t %d \t RUNNING \t %d \n ", p->name,p->pid,p->priority);
+      cprintf("%s \t %d \t RUNNING \t %d \t %d  \n ", p->name,p->pid,p->priority, p->execTime);
     }	  
     else if(p->state == RUNNABLE){
-      cprintf("%s \t %d \t RUNNABLE \t %d \n ", p->name,p->pid,p->priority);
+      cprintf("%s \t %d \t RUNNABLE \t %d \t %d  \n ", p->name,p->pid,p->priority, p->execTime);
     }	  
   }
   release(&ptable.lock);

@@ -52,6 +52,7 @@ struct proc {
   int priority;                // Process priority (scheduling)
   int maxTimerTicks;
   int currentTimerTicks;
+  int execTime;
 };
 
 // Process memory is laid out contiguously, low addresses first:
