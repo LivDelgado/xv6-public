@@ -48,6 +48,15 @@ trap(struct trapframe *tf)
 
   switch(tf->trapno){
   case T_IRQ0 + IRQ_TIMER:
+    if(myproc() && (tf->cs&3)==DPL_USER){
+      myproc()->curalarmticks++;
+      if(myproc()->alarmticks == myproc()->curalarmticks){ 
+        myproc()->curalarmticks = 0;
+        tf->esp -= 4;    
+        *((uint *)(tf->esp)) = tf->eip;
+        tf->eip =(uint) myproc()->alarmhandler;
+      }
+    }
     if(cpuid() == 0){
       acquire(&tickslock);
       ticks++;
