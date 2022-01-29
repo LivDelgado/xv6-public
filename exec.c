@@ -103,6 +103,7 @@ exec(char *path, char **argv)
   freevm(oldpgdir);
   return 0;
 
+ curproc->priority = 2;
  bad:
   if(pgdir)
     freevm(pgdir);

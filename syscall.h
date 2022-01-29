@@ -22,3 +22,5 @@
 #define SYS_close  21
 #define SYS_date   22
 #define SYS_time   23
+#define SYS_cps    24
+#define SYS_chpr   25
