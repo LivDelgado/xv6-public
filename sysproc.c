@@ -117,13 +117,13 @@ sys_time(void)
 }
 
 int
-sys_cps(void)
+sys_printProcesses(void)
 {
-  return cps();
+  return printProcesses();
 }
 
 int
-sys_chpr(void)
+sys_setprio(void)
 {
   int pid, pr;
   if(argint(0, &pid) < 0)
@@ -131,5 +131,5 @@ sys_chpr(void)
   if(argint(1, &pr) < 0)
     return -1;
 
-  return chpr(pid, pr);
+  return setprio(pid, pr);
 }

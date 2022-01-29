@@ -574,7 +574,7 @@ procdump(void)
 }
 
 int
-cps()
+printProcesses()
 {
   struct proc *p;
 //Enables interrupts on this processor.
@@ -582,7 +582,7 @@ cps()
 
 //Loop over process table looking for process with pid.
   acquire(&ptable.lock);
-  cprintf("name \t pid \t state \t priority \t Exec esperada\n");
+  cprintf("Processos \t ID \t Prioridade \t Exec esperada\n");
   int somaPrioridade = 0;
   
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
@@ -591,22 +591,23 @@ cps()
    
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){   
     p->execTime = (p->priority * 10) / somaPrioridade;
-    if(p->state == SLEEPING){
-      cprintf("%s \t %d \t SLEEPING \t %d \t %d \n ", p->name,p->pid,p->priority, p->execTime);
-    }	 
-    else if(p->state == RUNNING){
-      cprintf("%s \t %d \t RUNNING \t %d \t %d  \n ", p->name,p->pid,p->priority, p->execTime);
-    }	  
-    else if(p->state == RUNNABLE){
-      cprintf("%s \t %d \t RUNNABLE \t %d \t %d  \n ", p->name,p->pid,p->priority, p->execTime);
-    }	  
+    if(p->state != 0){
+      cprintf(
+        "%s \t\t %d \t \t %d \t\t %d \n ",
+        p->name,
+        p->pid,
+        p->priority,
+        p->execTime
+      );
+    }
   }
+
   release(&ptable.lock);
   return 22;
 }
 
 int 
-chpr(int pid, int priority)
+setprio(int pid, int priority)
 {
   struct proc *p;
   acquire(&ptable.lock);
