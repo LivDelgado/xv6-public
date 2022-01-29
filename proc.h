@@ -50,8 +50,8 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
   int priority;                // Process priority (scheduling)
-  int alarmticks;
-  int curalarmticks;
+  int maxTimerTicks;
+  int currentTimerTicks;
 };
 
 // Process memory is laid out contiguously, low addresses first:

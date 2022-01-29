@@ -89,7 +89,7 @@ found:
   p->state = EMBRYO;
   p->pid = nextpid++;
   p->priority = 1;
-  p->alarmticks = 10; // DEFINING CONSTANT TICKS TO RUN PERIODIC FUNCTION
+  p->maxTimerTicks = 10; // DEFINING CONSTANT TICKS TO RUN PERIODIC FUNCTION
   
   release(&ptable.lock);
 
