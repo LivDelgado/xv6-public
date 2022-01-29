@@ -65,6 +65,23 @@ myproc(void) {
   return p;
 }
 
+
+void
+resetExecutionTime()
+{
+  struct proc *p;
+  int somaPrioridade = 0;
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    somaPrioridade += p->priority;  
+  }
+   
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    p->execTime = (p->priority * 10) / somaPrioridade;
+  }
+}
+
+
 //PAGEBREAK: 32
 // Look in the process table for an UNUSED proc.
 // If found, change state to EMBRYO and initialize
@@ -91,6 +108,8 @@ found:
   p->priority = 1;
   p->maxTimerTicks = 10; // DEFINING CONSTANT TICKS TO RUN PERIODIC FUNCTION
   
+  resetExecutionTime();
+
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -265,6 +284,11 @@ exit(void)
 
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
+
+  curproc->execTime = 0;
+  curproc->priority = 0;
+  resetExecutionTime();
+
   sched();
   panic("zombie exit");
 }
@@ -332,7 +356,7 @@ scheduler(void)
     // Enable interrupts on this processor.
     sti();
 
-    struct proc *highP;
+    struct proc *highPriority;
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
@@ -344,15 +368,16 @@ scheduler(void)
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
 
-      highP = p;
+      highPriority = p;
       //choose one with highest priority
       for(p1 = ptable.proc; p1 < &ptable.proc[NPROC]; p1++){
         if(p1->state != RUNNABLE)
           continue;
-        if(highP->priority < p1->priority)
-          highP = p1;
+
+        if(highPriority->priority < p1->priority)
+          highPriority = p1;
       }
-      p = highP;
+      p = highPriority;
 
       c->proc = p;
       switchuvm(p);
