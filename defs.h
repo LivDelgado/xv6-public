@@ -122,7 +122,7 @@ int             wait(void);
 void            wakeup(void*);
 void            yield(void);
 int             printProcesses(void);
-int             setprio(int pid, int priority);
+int             setprio(int priority);
 
 // swtch.S
 void            swtch(struct context**, struct context*);

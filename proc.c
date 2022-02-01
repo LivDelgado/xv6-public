@@ -72,12 +72,17 @@ resetExecutionTime()
   struct proc *p;
   int somaPrioridade = 0;
 
+  // get total weight (sum of priorities)
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     somaPrioridade += p->priority;  
   }
    
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    // set process expected execution time
     p->execTime = (p->priority * 10) / somaPrioridade;
+
+    // set maximum ticks to call scheduler (cpu time limit)
+    p->maxTimerTicks = p->execTime * 100;
   }
 }
 
@@ -577,12 +582,13 @@ int
 printProcesses()
 {
   struct proc *p;
-//Enables interrupts on this processor.
+  
+  //Enables interrupts on this processor.
   sti();
 
-//Loop over process table looking for process with pid.
+  //Loop over process table looking for process with pid.
   acquire(&ptable.lock);
-  cprintf("Processos \t ID \t Prioridade \t Exec esperada\n");
+  cprintf("Processos \t\t ID \t\t Prioridade \t\t Exec esperada\n");
   int somaPrioridade = 0;
   
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
@@ -593,11 +599,11 @@ printProcesses()
     p->execTime = (p->priority * 10) / somaPrioridade;
     if(p->state != 0){
       cprintf(
-        "%s \t\t %d \t \t %d \t\t %d \n ",
+        "%s \t\t\t %d \t\t\t %d \t\t\t %d \n ",
         p->name,
         p->pid,
         p->priority,
-        p->execTime
+        (int)p->execTime
       );
     }
   }
@@ -607,16 +613,12 @@ printProcesses()
 }
 
 int 
-setprio(int pid, int priority)
+setprio(int priority)
 {
-  struct proc *p;
-  acquire(&ptable.lock);
-  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-    if(p->pid == pid){
-      p->priority = priority;
-      break;
-    }
-  }
-  release(&ptable.lock);
-  return pid;
+  // should this apply to the current running process only? how is this working? why is it wrong?
+  struct proc *p = myproc();
+
+  p->priority = priority;
+
+  return p->pid;
 }

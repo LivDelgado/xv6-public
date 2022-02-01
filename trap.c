@@ -59,10 +59,10 @@ trap(struct trapframe *tf)
     // there's a process running and timer interrupt came from user space
     if(myproc() && (tf->cs&3)==DPL_USER){
       myproc()->currentTimerTicks++;
-      // when a process's alarm interval expires execute the method
+      // hit process' maximum cpu time?
       if(myproc()->maxTimerTicks == myproc()->currentTimerTicks){ 
-        myproc()->currentTimerTicks = 0;
-        scheduler();
+        myproc()->currentTimerTicks = 0; // reset cpu time
+        yield(); // call scheduler again
       }
     }
 
