@@ -111,7 +111,6 @@ found:
   p->state = EMBRYO;
   p->pid = nextpid++;
   p->priority = 1;
-  p->maxTimerTicks = 10; // DEFINING CONSTANT TICKS TO RUN PERIODIC FUNCTION
   
   resetExecutionTime();
 
@@ -363,6 +362,13 @@ scheduler(void)
 
     struct proc *highPriority;
 
+    // if this is a new cpu cycle (10s time window), clear processes ticks count
+    if (c->totalCycleTicks >= 1000) {
+      for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+        p->currentTimerTicks = 0;
+      }
+    }
+
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
@@ -379,7 +385,12 @@ scheduler(void)
         if(p1->state != RUNNABLE)
           continue;
 
-        if(highPriority->priority < p1->priority)
+        if (
+          // highest priority process
+          highPriority->priority < p1->priority &&
+          // still has time to execute in the window
+          p1->currentTimerTicks < (100 * p1->priority)
+        )
           highPriority = p1;
       }
       p = highPriority;
@@ -387,6 +398,8 @@ scheduler(void)
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
+      p->currentTimerTicks++;
+      c->totalCycleTicks++;
 
       swtch(&(c->scheduler), p->context);
       switchkvm();

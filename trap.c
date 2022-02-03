@@ -56,16 +56,6 @@ trap(struct trapframe *tf)
     }
     lapiceoi();
 
-    // there's a process running and timer interrupt came from user space
-    if(myproc() && (tf->cs&3)==DPL_USER){
-      myproc()->currentTimerTicks++;
-      // hit process' maximum cpu time?
-      if(myproc()->maxTimerTicks == myproc()->currentTimerTicks){ 
-        myproc()->currentTimerTicks = 0; // reset cpu time
-        yield(); // call scheduler again
-      }
-    }
-
     break;
   case T_IRQ0 + IRQ_IDE:
     ideintr();

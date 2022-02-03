@@ -106,6 +106,7 @@ sys_date(void)
 int
 sys_time(void)
 {
+  /*
   // get system time calculation result
   int current = system_time.counter;
 
@@ -114,6 +115,8 @@ sys_time(void)
 
   // return system time
   return current;
+  */
+  return myproc()->currentTimerTicks;
 }
 
 int
