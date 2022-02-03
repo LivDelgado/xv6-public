@@ -104,7 +104,7 @@ exec(char *path, char **argv)
   return 0;
 
   
-curproc->priority = 2;
+curproc->priority = 5;
  bad:
   if(pgdir)
     freevm(pgdir);
