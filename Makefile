@@ -184,8 +184,8 @@ UPROGS=\
 	_wc\
 	_zombie\
 	_usertimetest\
-	_pstatus\ 
-	_teste\ 
+	_pstatus\
+	_teste\
 	_priority\
 
 fs.img: mkfs README $(UPROGS)
