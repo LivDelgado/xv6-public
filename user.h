@@ -26,7 +26,7 @@ int uptime(void);
 int date(void*);
 int time(void);
 int printProcesses(void);
-int setprio(int priority);
+int setprio(int pid, int priority);
 
 // ulib.c
 int stat(const char*, struct stat*);

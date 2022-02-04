@@ -363,7 +363,10 @@ scheduler(void)
     struct proc *highPriority;
 
     // if this is a new cpu cycle (10s time window), clear processes ticks count
+    // ten seconds cycle
     if (c->totalCycleTicks >= 1000) {
+      c->totalCycleTicks = 0;
+
       for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
         p->currentTimerTicks = 0;
       }
@@ -389,9 +392,10 @@ scheduler(void)
           // highest priority process
           highPriority->priority < p1->priority &&
           // still has time to execute in the window
-          p1->currentTimerTicks < (100 * p1->priority)
-        )
+          p1->currentTimerTicks < p1->maxTimerTicks
+        ) {
           highPriority = p1;
+        }
       }
       p = highPriority;
 
@@ -601,7 +605,7 @@ printProcesses()
 
   //Loop over process table looking for process with pid.
   acquire(&ptable.lock);
-  cprintf("Processos \t\t ID \t\t Prioridade \t\t Exec esperada\n");
+  cprintf("Processos \t ID \t Status \t Prioridade \t Exec esperada\n");
   int somaPrioridade = 0;
   
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
@@ -610,15 +614,13 @@ printProcesses()
    
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){   
     p->execTime = (p->priority * 10) / somaPrioridade;
-    if(p->state != 0){
-      cprintf(
-        "%s \t\t\t %d \t\t\t %d \t\t\t %d \n ",
-        p->name,
-        p->pid,
-        p->priority,
-        (int)p->execTime
-      );
-    }
+
+    if (p->state == SLEEPING)
+      cprintf("%s \t\t %d \t SLEEPING \t %d \t\t %d \n", p->name, p->pid, p->priority, (int)p->execTime);
+    else if (p->state == RUNNING)
+      cprintf("%s \t\t %d \t RUNNING \t %d \t\t %d \n", p->name, p->pid, p->priority, (int)p->execTime);
+    else if (p->state == RUNNABLE)
+      cprintf("%s \t\t %d \t RUNNABLE \t %d \t\t %d \n", p->name, p->pid, p->priority, (int)p->execTime);
   }
 
   release(&ptable.lock);
@@ -626,12 +628,16 @@ printProcesses()
 }
 
 int 
-setprio(int priority)
+setprio(int pid, int priority)
 {
-  // should this apply to the current running process only? how is this working? why is it wrong?
-  struct proc *p = myproc();
-
-  p->priority = priority;
-
-  return p->pid;
+  struct proc *p;
+  acquire(&ptable.lock);
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->pid == pid){
+      p->priority = priority;
+      break;
+    }
+  }
+  release(&ptable.lock);
+  return pid;
 }

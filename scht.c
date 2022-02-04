@@ -27,6 +27,8 @@ void executeProcess(int pid, char *command, char **arguments)
     printf(stderror, "scheduler test: Fork error\n");
     exit();
   }
+
+  exit();
 }
 
 int main(int argc, char *argv[])
@@ -34,14 +36,18 @@ int main(int argc, char *argv[])
   char *command = argv[1];
   char **arguments = argv + 1;
 
-  for (int i = 1; i < 11; i+=2) {
-    // create a new process to execute the command
-    int process = fork();
-    //setprio(i); // when should we call this method?
-    printProcesses();
-    executeProcess(process, command, arguments);
-  }
+  int p1 = fork();
+  int p2 = fork();
 
+  setprio(p1, 5);
+  printProcesses();
+  setprio(p2, 3);
+  printProcesses();
+
+  executeProcess(p1, command, arguments);
+  printProcesses();
+
+  executeProcess(p2, command, arguments);
   printProcesses();
 
   exit();

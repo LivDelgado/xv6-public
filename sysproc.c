@@ -128,9 +128,12 @@ sys_printProcesses(void)
 int
 sys_setprio(void)
 {
-  int priority;
+  int pid, priority;
+
+  if(argint(0, &pid) < 0)
+    return -1;
   if(argint(1, &priority) < 0)
     return -1;
 
-  return setprio(priority);
+  return setprio(pid, priority);
 }
