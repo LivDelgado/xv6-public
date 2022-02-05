@@ -288,10 +288,18 @@ exit(void)
 
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
-
   curproc->execTime = 0;
   curproc->priority = 0;
   resetExecutionTime();
+   
+  int executionTime = 0;
+  if(curproc->countTicks > 0){
+    executionTime = curproc->countTicks;
+  } else {
+    executionTime = curproc->currentTimerTicks;
+  }
+  
+  cprintf("Tempo de execução do processo %s foi %d \n\n", curproc->name, executionTime);
 
   sched();
   panic("zombie exit");
@@ -354,20 +362,20 @@ scheduler(void)
 {
   struct proc *p, *p1;
   struct cpu *c = mycpu();
-  c->proc = 0;
+  c->proc = 0; 
   
   for(;;){
     // Enable interrupts on this processor.
     sti();
 
     struct proc *highPriority;
-
     // if this is a new cpu cycle (10s time window), clear processes ticks count
     // ten seconds cycle
     if (c->totalCycleTicks >= 1000) {
       c->totalCycleTicks = 0;
 
       for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+        p->countTicks = p->countTicks + p->currentTimerTicks;
         p->currentTimerTicks = 0;
       }
     }
@@ -411,9 +419,9 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
+      
     }
-    release(&ptable.lock);
-
+    release(&ptable.lock);   
   }
 }
 
@@ -440,7 +448,7 @@ sched(void)
     panic("sched interruptible");
   intena = mycpu()->intena;
   swtch(&p->context, mycpu()->scheduler);
-  mycpu()->intena = intena;
+  mycpu()->intena = intena;    
 }
 
 // Give up the CPU for one scheduling round.
@@ -622,7 +630,7 @@ printProcesses()
     else if (p->state == RUNNABLE)
       cprintf("%s \t\t %d \t RUNNABLE \t %d \t\t %d \n", p->name, p->pid, p->priority, (int)p->execTime);
   }
-
+  cprintf("\n\n");
   release(&ptable.lock);
   return 22;
 }

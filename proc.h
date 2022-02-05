@@ -53,6 +53,7 @@ struct proc {
   int priority;                // Process priority (scheduling)
   int currentTimerTicks;
   int maxTimerTicks;
+  int countTicks;
   float execTime;
 };
 
