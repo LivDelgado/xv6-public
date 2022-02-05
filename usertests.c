@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     {
       for (j = 0; j < max_int; j++)
       {
-        printf(1, "j, %d\n", j);
+        //printf(1, "j, %d\n", j);
         for (z = 0; z < max_int; z++)
         {
           //printf(1, "z, %d\n", z);

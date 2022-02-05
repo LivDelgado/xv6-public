@@ -82,7 +82,7 @@ resetExecutionTime()
     p->execTime = (p->priority * 10) / somaPrioridade;
 
     // set maximum ticks to call scheduler (cpu time limit)
-    p->maxTimerTicks = p->execTime * 225000;
+    p->maxTimerTicks = p->execTime * 225;
   }
 }
 
@@ -397,15 +397,17 @@ scheduler(void)
       highPriority = p;
       //choose one with highest priority
       for(p1 = ptable.proc; p1 < &ptable.proc[NPROC]; p1++){
-        if(p1->state != RUNNABLE)
+        if(
+          p1->state != RUNNABLE ||
+          // still has time to execute in the window
+          p1->currentTimerTicks >= p1->maxTimerTicks
+        )
           continue;
 
-        if (
-          // highest priority process
-          highPriority->priority < p1->priority &&
-          // still has time to execute in the window
-          p1->currentTimerTicks < p1->maxTimerTicks
-        ) {
+        //cprintf("processo %s current ticks %d max %d\n", p1->name, p1->currentTimerTicks, p1->maxTimerTicks);
+
+        // highest priority process
+        if (highPriority->priority <= p1->priority) {
           highPriority = p1;
         }
       }
