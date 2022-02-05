@@ -82,7 +82,7 @@ resetExecutionTime()
     p->execTime = (p->priority * 10) / somaPrioridade;
 
     // set maximum ticks to call scheduler (cpu time limit)
-    p->maxTimerTicks = p->execTime * 100;
+    p->maxTimerTicks = p->execTime * 225000;
   }
 }
 
@@ -299,7 +299,7 @@ exit(void)
     executionTime = curproc->currentTimerTicks;
   }
   
-  cprintf("Tempo de execução do processo %s foi %d \n\n", curproc->name, executionTime);
+  cprintf("\nTempo de execução do processo %s foi %d \n\n", curproc->name, executionTime);
 
   sched();
   panic("zombie exit");
@@ -362,19 +362,23 @@ scheduler(void)
 {
   struct proc *p, *p1;
   struct cpu *c = mycpu();
-  c->proc = 0; 
-  
+  c->proc = 0;
+  c->totalCycleTicks = 0;
+
   for(;;){
     // Enable interrupts on this processor.
     sti();
 
     struct proc *highPriority;
+
     // if this is a new cpu cycle (10s time window), clear processes ticks count
-    // ten seconds cycle
-    if (c->totalCycleTicks >= 1000) {
+    if (c->totalCycleTicks >= 2250000) {
       c->totalCycleTicks = 0;
 
       for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+        if (p->state != 0)
+          cprintf("\nTempo de execução do processo %s foi %d\n", p->name, p->currentTimerTicks);
+
         p->countTicks = p->countTicks + p->currentTimerTicks;
         p->currentTimerTicks = 0;
       }
@@ -410,6 +414,8 @@ scheduler(void)
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
+
+      // increment ticks in process and cpu
       p->currentTimerTicks++;
       c->totalCycleTicks++;
 
@@ -419,8 +425,8 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
-      
     }
+
     release(&ptable.lock);   
   }
 }

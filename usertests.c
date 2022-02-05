@@ -5,9 +5,11 @@
 
 int main(int argc, char *argv[])
 {
+  int max_int = 2147483647;
+
   int pid;
   int k, n;
-  int x, z;
+  int x, j, z;
 
   if (argc < 2)
     n = 1; //Default
@@ -33,10 +35,15 @@ int main(int argc, char *argv[])
     }
     else
     {
-      //printf(1,"Child %d created\n",getpid());
-      for (z = 0; z < 400000000; z += 1)
-        x = x + 3.14 * 89.64; //Useless calculation to consume CPU Time
-      break;
+      for (j = 0; j < max_int; j++)
+      {
+        printf(1, "j, %d\n", j);
+        for (z = 0; z < max_int; z++)
+        {
+          //printf(1, "z, %d\n", z);
+          x = x + 3.14 * 89.64; //Useless calculation to consume CPU Time
+        }
+      }
     }
   }
 
