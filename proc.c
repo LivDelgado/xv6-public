@@ -82,7 +82,7 @@ resetExecutionTime()
     p->execTime = (p->priority * 10) / somaPrioridade;
 
     // set maximum ticks to call scheduler (cpu time limit)
-    p->maxTimerTicks = p->execTime * 500;
+    p->maxTimerTicks = p->execTime * 225;
   }
 }
 
