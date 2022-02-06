@@ -48,6 +48,19 @@ printint(int xx, int base, int sign)
   while(--i >= 0)
     consputc(buf[i]);
 }
+
+void
+pfloat(float xx)
+{
+  int beg=(int)(xx);
+  int fin=(int)(xx*100)-beg*100;
+  printint(beg, 10, 1);
+  consputc('.');
+	if(fin<10)
+    consputc('0');
+
+	printint(fin, 10, 1);
+}
 //PAGEBREAK: 50
 
 // Print to the console. only understands %d, %x, %p, %s.
@@ -102,6 +115,12 @@ cprintf(char *fmt, ...)
   if(locking)
     release(&cons.lock);
 }
+
+void
+printfloat(float value){
+  pfloat(value);
+}
+
 
 void
 panic(char *s)

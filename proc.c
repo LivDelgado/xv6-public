@@ -620,21 +620,29 @@ printProcesses()
   //Loop over process table looking for process with pid.
   acquire(&ptable.lock);
   cprintf("Processos \t ID \t Status \t Prioridade \t Exec esperada\n");
-  int somaPrioridade = 0;
+  float somaPrioridade = 0;
   
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     somaPrioridade += p->priority;  
   }
    
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){   
-    p->execTime = (p->priority * 10) / somaPrioridade;
+    p->execTime = (p->priority * 10) / somaPrioridade;        
 
     if (p->state == SLEEPING)
-      cprintf("%s \t\t %d \t SLEEPING \t %d \t\t %d \n", p->name, p->pid, p->priority, (int)p->execTime);
+      cprintf("%s \t\t %d \t SLEEPING \t %d \t\t", p->name, p->pid, p->priority);
     else if (p->state == RUNNING)
-      cprintf("%s \t\t %d \t RUNNING \t %d \t\t %d \n", p->name, p->pid, p->priority, (int)p->execTime);
-    else if (p->state == RUNNABLE)
-      cprintf("%s \t\t %d \t RUNNABLE \t %d \t\t %d \n", p->name, p->pid, p->priority, (int)p->execTime);
+      cprintf("%s \t\t %d \t RUNNING \t %d \t\t", p->name, p->pid, p->priority);
+    else if (p->state == RUNNABLE){
+          cprintf("%s \t\t %d \t RUNNABLE \t %d \t\t", p->name, p->pid, p->priority);
+    }
+    
+    if(p->state == SLEEPING || p->state == RUNNING || p->state == RUNNABLE) {
+      printfloat(p->execTime);
+      cprintf("\n");
+    }
+
+
   }
   cprintf("\n\n");
   release(&ptable.lock);
