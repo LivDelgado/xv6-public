@@ -8,7 +8,7 @@ struct cpu {
   int ncli;                    // Depth of pushcli nesting.
   int intena;                  // Were interrupts enabled before pushcli?
   struct proc *proc;           // The process running on this cpu or null
-  int totalCycleTicks;
+  int totalCycleTicks;         // Counter of ticks (to control time window)
 };
 
 extern struct cpu cpus[NCPU];
@@ -51,10 +51,10 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
   int priority;                // Process priority (scheduling)
-  int currentTimerTicks;
-  int maxTimerTicks;
-  int countTicks;
-  float execTime;
+  int currentTimerTicks;       // Current number of ticks in cpu time window
+  int maxTimerTicks;           // Max number of ticks in cpu time window
+  int countTicks;              // Total number of ticks (all time windows)
+  float execTime;              // Expected execution time
 };
 
 // Process memory is laid out contiguously, low addresses first:

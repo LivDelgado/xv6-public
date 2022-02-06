@@ -404,8 +404,6 @@ scheduler(void)
         )
           continue;
 
-        //cprintf("processo %s current ticks %d max %d\n", p1->name, p1->currentTimerTicks, p1->maxTimerTicks);
-
         // highest priority process
         if (highPriority->priority <= p1->priority) {
           highPriority = p1;
@@ -456,7 +454,7 @@ sched(void)
     panic("sched interruptible");
   intena = mycpu()->intena;
   swtch(&p->context, mycpu()->scheduler);
-  mycpu()->intena = intena;    
+  mycpu()->intena = intena;
 }
 
 // Give up the CPU for one scheduling round.
